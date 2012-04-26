@@ -146,30 +146,76 @@ void drawGame(){
 				yline += game.rows;
 				xline = floor((mouseX- 330)/10);
 				}
-	
+				
 				var index = floor(yline *game.chars +xline);
 				var data = "";
 	
 				var isWord =false;
+				
+				var wordIndex = 0;
 	
 				for(var i = 0; i < game.wordmeta.length;i++){
 					if(index >= game.wordmeta[i].start &&index <= game.wordmeta[i].end){
 						isWord =true;
 						data= game.words[i].toUpperCase();
-			
+						wordIndex =game.wordmeta[i].start +1;
 						game.current = data;
 					}
 				}
 	
-				//TODO draw the inverted options here
+
+				
+				
 		
 		
 				if(isWord){
+						//Draw the texta t teh prompt
 						text(game.current, 480,400, 150,20);
+						
+						//TODO draw the inverted options here						
+						var tmp_boxX = 95+wordIndex%game.chars*10;
+						var tmp_boxY = offset+ 20 * floor(wordIndex/game.chars);
+						if(wordIndex> game.text.length/2){
+							tmp_boxX = 330+wordIndex%game.chars*10;
+							tmp_boxY = offset+ 20 * (floor(wordIndex/game.chars)-game.rows);
+						}
+						var overhang = game.chars - (wordIndex%game.chars + game.current.length);
+						
+						if(overhang >=0){
+							rect(tmp_boxX, tmp_boxY-3, 10 * game.current.length,20);
+							fill(2,42,18);
+							text(game.current, tmp_boxX, tmp_boxY, 150,20);
+						}
+						else{
+						
+							
+							//we over hang 
+							rect(tmp_boxX, tmp_boxY-3, 10 * (game.current.length + overhang ),20);
+							fill(2,42,18);
+							text(game.current.substring(0, game.current.length + overhang), tmp_boxX, tmp_boxY, 150,20);
+							
+							//next row
+							
+							tmp_boxX = 95;
+							if(wordIndex> game.text.length/2 ){
+							tmp_boxX =330;
+							}
+							//wrap left to right cols
+							if(yline == game.rows -1 && tmp_boxX ==95){
+							tmp_boxX =330;
+							tmp_boxY= offset -20;
+							}
+							
+							fill(72,234,161);
+							rect(tmp_boxX, tmp_boxY+17 , 10 * abs(overhang) ,20);
+							fill(2,42,18);
+							text(game.current.substring( game.current.length + overhang, game.current.length), tmp_boxX, tmp_boxY+20, 150,20);
+							
+						}
 					}	
 			}
 	
-	
+		fill(72,234,161);
 			//Draw previous guesses.
 			for(var i = game.guess.length -1 ; i >=0; i--){
 				text("> "+game.guess[i], 460,(360 - game.guess.length*40)+(i*40), 150,20);
